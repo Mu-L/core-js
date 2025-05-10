@@ -78,7 +78,7 @@
     "@babel/plugin-transform-new-target": "^7.27.1",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
     "@babel/plugin-transform-numeric-separator": "^7.27.1",
-    "@babel/plugin-transform-object-rest-spread": "^7.27.1",
+    "@babel/plugin-transform-object-rest-spread": "^7.27.2",
     "@babel/plugin-transform-object-super": "^7.27.1",
     "@babel/plugin-transform-optional-catch-binding": "^7.27.1",
     "@babel/plugin-transform-optional-chaining": "^7.27.1",
@@ -95,6 +95,6 @@
     "konan": "^2.1.1",
     "npm-run-all2": "^8.0.1",
     "semver": "^7.7.1",
-    "zx": "^8.5.3"
+    "zx": "^8.5.4"
   }
 }
