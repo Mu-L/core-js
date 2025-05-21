@@ -448,7 +448,7 @@ export const data = {
     chrome: '110',
     deno: '1.27',
     // Incorrect exception thrown when index coercion fails
-    // firefox: '115',
+    firefox: '140', // '115',
     hermes: '0.13',
     'react-native': '0.74',
     rhino: '1.8.0',
@@ -694,11 +694,13 @@ export const data = {
     // safari: '18.4',
   },
   'es.iterator.from': {
-    bun: '1.1.31',
+    // Because of a bug in wrapper validation https://bugs.webkit.org/show_bug.cgi?id=288714
+    bun: '1.2.5',  // '1.1.31',
     chrome: '122',
     deno: '1.38.1',
     firefox: '131',
-    safari: '18.4',
+    // Because of a bug in wrapper validation https://bugs.webkit.org/show_bug.cgi?id=288714
+    // safari: '18.4',
   },
   'es.iterator.map': {
     // with changes related to the new iteration closing approach on early error
@@ -2210,12 +2212,14 @@ export const data = {
     safari: '10.0',
   },
   'es.typed-array.with': {
-    bun: '0.1.9',
+    // It should truncate a negative fractional index to zero, but instead throws an error
+    // bun: '0.1.9',
     chrome: '110',
     deno: '1.27',
     firefox: '115',
     rhino: '1.8.0',
-    safari: '16.4',
+    // It should truncate a negative fractional index to zero, but instead throws an error
+    // safari: '16.4',
   },
   'es.unescape': {
     chrome: '1',

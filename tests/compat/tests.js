@@ -791,7 +791,8 @@ GLOBAL.tests = {
   ],
   'es.iterator.for-each': checkIteratorClosingOnEarlyError('forEach', TypeError),
   'es.iterator.from': function () {
-    return Iterator.from;
+    Iterator.from({ 'return': null })['return']();
+    return true;
   },
   'es.iterator.map': [
     iteratorHelperThrowsErrorOnInvalidIterator('map', function () { /* empty */ }),
@@ -909,6 +910,7 @@ GLOBAL.tests = {
     return Math.trunc;
   },
   'es.number.constructor': function () {
+    // eslint-disable-next-line math/no-static-nan-calculations -- feature detection
     return Number(' 0o1') && Number('0b1') && !Number('+0x1');
   },
   'es.number.epsilon': function () {
@@ -1661,13 +1663,21 @@ GLOBAL.tests = {
   'es.typed-array.to-sorted': function () {
     return Int8Array.prototype.toSorted;
   },
-  'es.typed-array.with': function () {
+  'es.typed-array.with': [function () {
     try {
       new Int8Array(1)['with'](2, { valueOf: function () { throw 8; } });
     } catch (error) {
       return error === 8;
     }
-  },
+  }, function () {
+    // WebKit doesn't handle this correctly. It should truncate a negative fractional index to zero, but instead throws an error
+    // Copyright (C) 2025 André Bargull. All rights reserved.
+    // This code is governed by the BSD license found in the LICENSE file.
+    // https://github.com/tc39/test262/pull/4477/commits/bd47071722d914036280cdd795a6ac6046d1c6f9
+    var ta = new Int8Array(1);
+    var result = ta['with'](-0.5, 1);
+    return result[0] === 1;
+  }],
   'es.unescape': function () {
     return unescape;
   },
