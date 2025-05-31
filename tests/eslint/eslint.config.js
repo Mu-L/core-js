@@ -2,6 +2,7 @@ import globals from 'globals';
 import confusingBrowserGlobals from 'confusing-browser-globals';
 import parserJSONC from 'jsonc-eslint-parser';
 import pluginArrayFunc from 'eslint-plugin-array-func';
+import pluginASCII from 'eslint-plugin-ascii';
 import pluginCanonical from 'eslint-plugin-canonical';
 import pluginDepend from 'eslint-plugin-depend';
 import pluginESX from 'eslint-plugin-es-x';
@@ -9,15 +10,16 @@ import pluginESlintComments from '@eslint-community/eslint-plugin-eslint-comment
 import pluginImport from 'eslint-plugin-import-x';
 import pluginJSONC from 'eslint-plugin-jsonc';
 import pluginMarkdown from '@eslint/markdown';
+import pluginMath from 'eslint-plugin-math';
 import pluginN from 'eslint-plugin-n';
+import pluginNodeDependencies from 'eslint-plugin-node-dependencies';
 import * as pluginPackageJSON from 'eslint-plugin-package-json';
 import pluginPromise from 'eslint-plugin-promise';
 import pluginQUnit from 'eslint-plugin-qunit';
 import pluginReDoS from 'eslint-plugin-redos';
 import pluginRegExp from 'eslint-plugin-regexp';
 import pluginSonarJS from 'eslint-plugin-sonarjs';
-import pluginStylisticJS from '@stylistic/eslint-plugin-js';
-import pluginStylisticPlus from '@stylistic/eslint-plugin-plus';
+import pluginStylistic from '@stylistic/eslint-plugin';
 import pluginUnicorn from 'eslint-plugin-unicorn-x';
 
 const PACKAGES_NODE_VERSIONS = '8.9.0';
@@ -99,18 +101,20 @@ const base = {
   'no-template-curly-in-string': ERROR,
   // disallow `this` / `super` before calling `super()` in constructors
   'no-this-before-super': ERROR,
-  // disallow unmodified loop conditions
-  'no-unmodified-loop-condition': ERROR,
+  // disallow `let` or `var` variables that are read but never assigned
+  'no-unassigned-vars': ERROR,
   // disallow use of undeclared variables unless mentioned in a /*global */ block
   'no-undef': [ERROR, { typeof: false }],
-  // disallow control flow statements in `finally` blocks
-  'no-unsafe-finally': ERROR,
   // avoid code that looks like two expressions but is actually one
   'no-unexpected-multiline': ERROR,
+  // disallow unmodified loop conditions
+  'no-unmodified-loop-condition': ERROR,
   // disallow unreachable statements after a return, throw, continue, or break statement
   'no-unreachable': ERROR,
   // disallow loops with a body that allows only one iteration
   'no-unreachable-loop': ERROR,
+  // disallow control flow statements in `finally` blocks
+  'no-unsafe-finally': ERROR,
   // disallow negation of the left operand of an in expression
   'no-unsafe-negation': ERROR,
   // disallow use of optional chaining in contexts where the `undefined` value is not allowed
@@ -338,47 +342,49 @@ const base = {
 
   // layout & formatting:
   // enforce spacing inside array brackets
-  '@stylistic/js/array-bracket-spacing': [ERROR, NEVER],
+  '@stylistic/array-bracket-spacing': [ERROR, NEVER],
   // require parentheses around arrow function arguments
-  '@stylistic/js/arrow-parens': [ERROR, 'as-needed'],
+  '@stylistic/arrow-parens': [ERROR, 'as-needed'],
   // enforce consistent spacing before and after the arrow in arrow functions
-  '@stylistic/js/arrow-spacing': ERROR,
+  '@stylistic/arrow-spacing': ERROR,
   // enforce spacing inside single-line blocks
-  '@stylistic/js/block-spacing': [ERROR, ALWAYS],
+  '@stylistic/block-spacing': [ERROR, ALWAYS],
   // enforce one true brace style
-  '@stylistic/js/brace-style': [ERROR, '1tbs', { allowSingleLine: true }],
+  '@stylistic/brace-style': [ERROR, '1tbs', { allowSingleLine: true }],
   // enforce trailing commas in multiline object literals
-  '@stylistic/js/comma-dangle': [ERROR, 'always-multiline'],
+  '@stylistic/comma-dangle': [ERROR, 'always-multiline'],
   // enforce spacing after comma
-  '@stylistic/js/comma-spacing': ERROR,
+  '@stylistic/comma-spacing': ERROR,
   // enforce one true comma style
-  '@stylistic/js/comma-style': [ERROR, 'last'],
+  '@stylistic/comma-style': [ERROR, 'last'],
   // disallow padding inside computed properties
-  '@stylistic/js/computed-property-spacing': [ERROR, NEVER],
+  '@stylistic/computed-property-spacing': [ERROR, NEVER],
+  // enforce consistent line breaks after opening and before closing braces
+  '@stylistic/curly-newline': [ERROR, { consistent: true }],
   // enforce newline before and after dot
-  '@stylistic/js/dot-location': [ERROR, 'property'],
+  '@stylistic/dot-location': [ERROR, 'property'],
   // enforce one newline at the end of files
-  '@stylistic/js/eol-last': [ERROR, ALWAYS],
+  '@stylistic/eol-last': [ERROR, ALWAYS],
   // disallow space between function identifier and application
-  '@stylistic/js/function-call-spacing': ERROR,
+  '@stylistic/function-call-spacing': ERROR,
   // require spacing around the `*` in `function *` expressions
-  '@stylistic/js/generator-star-spacing': [ERROR, 'both'],
+  '@stylistic/generator-star-spacing': [ERROR, 'both'],
   // enforce the location of arrow function bodies
-  '@stylistic/js/implicit-arrow-linebreak': [ERROR, 'beside'],
+  '@stylistic/implicit-arrow-linebreak': [ERROR, 'beside'],
   // enforce consistent indentation
-  '@stylistic/js/indent': [ERROR, 2, {
+  '@stylistic/indent': [ERROR, 2, {
     ignoredNodes: ['ConditionalExpression'],
     SwitchCase: 1,
     VariableDeclarator: 'first',
   }],
   // enforces spacing between keys and values in object literal properties
-  '@stylistic/js/key-spacing': [ERROR, { beforeColon: false, afterColon: true }],
+  '@stylistic/key-spacing': [ERROR, { beforeColon: false, afterColon: true }],
   // require a space before & after certain keywords
-  '@stylistic/js/keyword-spacing': [ERROR, { before: true, after: true }],
+  '@stylistic/keyword-spacing': [ERROR, { before: true, after: true }],
   // enforce consistent linebreak style
-  '@stylistic/js/linebreak-style': [ERROR, 'unix'],
+  '@stylistic/linebreak-style': [ERROR, 'unix'],
   // specify the maximum length of a line in your program
-  '@stylistic/js/max-len': [ERROR, {
+  '@stylistic/max-len': [ERROR, {
     code: 140,
     tabWidth: 2,
     ignoreRegExpLiterals: true,
@@ -386,74 +392,76 @@ const base = {
     ignoreUrls: true,
   }],
   // enforce a maximum number of statements allowed per line
-  '@stylistic/js/max-statements-per-line': [ERROR, { max: 2 }],
+  '@stylistic/max-statements-per-line': [ERROR, { max: 2 }],
   // require parentheses when invoking a constructor with no arguments
-  '@stylistic/js/new-parens': ERROR,
+  '@stylistic/new-parens': ERROR,
   // disallow unnecessary semicolons
-  '@stylistic/js/no-extra-semi': ERROR,
+  '@stylistic/no-extra-semi': ERROR,
   // disallow the use of leading or trailing decimal points in numeric literals
-  '@stylistic/js/no-floating-decimal': ERROR,
+  '@stylistic/no-floating-decimal': ERROR,
   // disallow mixed spaces and tabs for indentation
-  '@stylistic/js/no-mixed-spaces-and-tabs': ERROR,
+  '@stylistic/no-mixed-spaces-and-tabs': ERROR,
   // disallow use of multiple spaces
-  '@stylistic/js/no-multi-spaces': [ERROR, { ignoreEOLComments: true }],
+  '@stylistic/no-multi-spaces': [ERROR, { ignoreEOLComments: true }],
   // disallow multiple empty lines and only one newline at the end
-  '@stylistic/js/no-multiple-empty-lines': [ERROR, { max: 1, maxEOF: 1 }],
+  '@stylistic/no-multiple-empty-lines': [ERROR, { max: 1, maxEOF: 1 }],
   // disallow tabs
-  '@stylistic/js/no-tabs': ERROR,
+  '@stylistic/no-tabs': ERROR,
   // disallow trailing whitespace at the end of lines
-  '@stylistic/js/no-trailing-spaces': ERROR,
+  '@stylistic/no-trailing-spaces': ERROR,
   // disallow whitespace before properties
-  '@stylistic/js/no-whitespace-before-property': ERROR,
+  '@stylistic/no-whitespace-before-property': ERROR,
   // enforce the location of single-line statements
-  '@stylistic/js/nonblock-statement-body-position': [ERROR, 'beside'],
+  '@stylistic/nonblock-statement-body-position': [ERROR, 'beside'],
   // enforce consistent line breaks after opening and before closing braces
-  '@stylistic/js/object-curly-newline': [ERROR, { consistent: true }],
+  '@stylistic/object-curly-newline': [ERROR, { consistent: true }],
   // enforce spaces inside braces
-  '@stylistic/js/object-curly-spacing': [ERROR, ALWAYS],
+  '@stylistic/object-curly-spacing': [ERROR, ALWAYS],
   // require newlines around variable declarations with initializations
-  '@stylistic/js/one-var-declaration-per-line': [ERROR, 'initializations'],
+  '@stylistic/one-var-declaration-per-line': [ERROR, 'initializations'],
   // enforce padding within blocks
-  '@stylistic/js/padded-blocks': [ERROR, NEVER],
+  '@stylistic/padded-blocks': [ERROR, NEVER],
   // disallow blank lines after 'use strict'
-  '@stylistic/js/padding-line-between-statements': [ERROR, { blankLine: NEVER, prev: 'directive', next: '*' }],
+  '@stylistic/padding-line-between-statements': [ERROR, { blankLine: NEVER, prev: 'directive', next: '*' }],
   // require or disallow use of quotes around object literal property names
-  '@stylistic/js/quote-props': [ERROR, 'as-needed', { keywords: false }],
+  '@stylistic/quote-props': [ERROR, 'as-needed', { keywords: false }],
   // specify whether double or single quotes should be used
-  '@stylistic/js/quotes': [ERROR, 'single', { avoidEscape: true }],
+  '@stylistic/quotes': [ERROR, 'single', { avoidEscape: true }],
   // enforce spacing between rest and spread operators and their expressions
-  '@stylistic/js/rest-spread-spacing': ERROR,
+  '@stylistic/rest-spread-spacing': ERROR,
   // require or disallow use of semicolons instead of ASI
-  '@stylistic/js/semi': [ERROR, ALWAYS],
+  '@stylistic/semi': [ERROR, ALWAYS],
   // enforce spacing before and after semicolons
-  '@stylistic/js/semi-spacing': ERROR,
+  '@stylistic/semi-spacing': ERROR,
   // enforce location of semicolons
-  '@stylistic/js/semi-style': [ERROR, 'last'],
+  '@stylistic/semi-style': [ERROR, 'last'],
   // require or disallow space before blocks
-  '@stylistic/js/space-before-blocks': ERROR,
+  '@stylistic/space-before-blocks': ERROR,
   // require or disallow space before function opening parenthesis
-  '@stylistic/js/space-before-function-paren': [ERROR, { anonymous: ALWAYS, named: NEVER }],
+  '@stylistic/space-before-function-paren': [ERROR, { anonymous: ALWAYS, named: NEVER }],
   // require or disallow spaces inside parentheses
-  '@stylistic/js/space-in-parens': ERROR,
+  '@stylistic/space-in-parens': ERROR,
   // require spaces around operators
-  '@stylistic/js/space-infix-ops': ERROR,
+  '@stylistic/space-infix-ops': ERROR,
   // require or disallow spaces before/after unary operators
-  '@stylistic/js/space-unary-ops': ERROR,
+  '@stylistic/space-unary-ops': ERROR,
   // require or disallow a space immediately following the // or /* in a comment
-  '@stylistic/js/spaced-comment': [ERROR, ALWAYS, {
+  '@stylistic/spaced-comment': [ERROR, ALWAYS, {
     line: { exceptions: ['/'] },
     block: { exceptions: ['*'] },
   }],
   // enforce spacing around colons of switch statements
-  '@stylistic/js/switch-colon-spacing': ERROR,
+  '@stylistic/switch-colon-spacing': ERROR,
   // require or disallow spacing around embedded expressions of template strings
-  '@stylistic/js/template-curly-spacing': [ERROR, ALWAYS],
+  '@stylistic/template-curly-spacing': [ERROR, ALWAYS],
   // disallow spacing between template tags and their literals
-  '@stylistic/js/template-tag-spacing': [ERROR, NEVER],
+  '@stylistic/template-tag-spacing': [ERROR, NEVER],
   // require spacing around the `*` in `yield *` expressions
-  '@stylistic/js/yield-star-spacing': [ERROR, 'both'],
-  // enforce consistent line breaks after opening and before closing braces
-  '@stylistic/plus/curly-newline': [ERROR, { consistent: true }],
+  '@stylistic/yield-star-spacing': [ERROR, 'both'],
+
+  // ascii
+  // forbid non-ascii chars in ast node names
+  'ascii/valid-name': ERROR,
 
   // import:
   // forbid any invalid exports, i.e. re-export of the same name
@@ -833,6 +841,63 @@ const base = {
   // values not convertible to numbers should not be used in numeric comparisons
   'sonarjs/values-not-convertible-to-numbers': ERROR,
 
+  // math
+  // enforce the conversion to absolute values to be the method you prefer
+  'math/abs': [ERROR, { prefer: 'Math.abs' }],
+  // disallow static calculations that go to infinity
+  'math/no-static-infinity-calculations': ERROR,
+  // disallow static calculations that go to `NaN`
+  'math/no-static-nan-calculations': ERROR,
+  // enforce the use of exponentiation (`**`) operator instead of other calculations
+  'math/prefer-exponentiation-operator': ERROR,
+  // enforce the use of `Math.cbrt()` instead of other cube root calculations
+  'math/prefer-math-cbrt': ERROR,
+  // enforce the use of `Math.E` instead of other ways
+  'math/prefer-math-e': ERROR,
+  // enforce the use of `Math.hypot()` instead of other hypotenuse calculations
+  'math/prefer-math-hypot': ERROR,
+  // enforce the use of `Math.LN10` instead of other ways
+  'math/prefer-math-ln10': ERROR,
+  // enforce the use of `Math.LN2` instead of other ways
+  'math/prefer-math-ln2': ERROR,
+  // enforce the use of `Math.log10` instead of other ways
+  'math/prefer-math-log10': ERROR,
+  // enforce the use of `Math.LOG10E` instead of other ways
+  'math/prefer-math-log10e': ERROR,
+  // enforce the use of `Math.log2` instead of other ways
+  'math/prefer-math-log2': ERROR,
+  // enforce the use of `Math.LOG2E` instead of other ways
+  'math/prefer-math-log2e': ERROR,
+  // enforce the use of `Math.PI` instead of literal number
+  'math/prefer-math-pi': ERROR,
+  // enforce the use of `Math.sqrt()` instead of other square root calculations
+  'math/prefer-math-sqrt': ERROR,
+  // enforce the use of `Math.SQRT1_2` instead of other ways
+  'math/prefer-math-sqrt1-2': ERROR,
+  // enforce the use of `Math.SQRT2` instead of other ways
+  'math/prefer-math-sqrt2': ERROR,
+  // enforce the use of `Math.trunc()` instead of other truncations
+  // temporarily disabled because of https://github.com/ota-meshi/eslint-plugin-math/issues/92
+  'math/prefer-math-trunc': OFF,
+  // enforce the use of `Number.EPSILON` instead of other ways
+  'math/prefer-number-epsilon': ERROR,
+  // enforce the use of `Number.isFinite()` instead of other checking ways
+  'math/prefer-number-is-finite': ERROR,
+  // enforce the use of `Number.isInteger()` instead of other checking ways
+  'math/prefer-number-is-integer': ERROR,
+  // enforce the use of `Number.isNaN()` instead of other checking ways
+  'math/prefer-number-is-nan': ERROR,
+  // enforce the use of `Number.isSafeInteger()` instead of other checking ways
+  'math/prefer-number-is-safe-integer': ERROR,
+  // enforce the use of `Number.MAX_SAFE_INTEGER` instead of other ways
+  'math/prefer-number-max-safe-integer': ERROR,
+  // enforce the use of `Number.MAX_VALUE` instead of literal number
+  'math/prefer-number-max-value': ERROR,
+  // enforce the use of `Number.MIN_SAFE_INTEGER` instead of other ways
+  'math/prefer-number-min-safe-integer': ERROR,
+  // enforce the use of `Number.MIN_VALUE` instead of literal number
+  'math/prefer-number-min-value': ERROR,
+
   // regexp
   // disallow confusing quantifiers
   'regexp/confusing-quantifier': ERROR,
@@ -1059,9 +1124,11 @@ const useES3Syntax = {
   // require template literals instead of string concatenation
   'prefer-template': OFF,
   // disallow trailing commas in multiline object literals
-  '@stylistic/js/comma-dangle': [ERROR, NEVER],
+  '@stylistic/comma-dangle': [ERROR, NEVER],
   // require or disallow use of quotes around object literal property names
-  '@stylistic/js/quote-props': [ERROR, 'as-needed', { keywords: true }],
+  '@stylistic/quote-props': [ERROR, 'as-needed', { keywords: true }],
+  // enforce the use of exponentiation (`**`) operator instead of other calculations
+  'math/prefer-exponentiation-operator': OFF,
   // prefer lookarounds over capturing group that do not replace
   'regexp/prefer-lookaround': [ERROR, { lookbehind: false, strictTypes: true }],
   // enforce using named capture group in regular expression
@@ -1170,9 +1237,7 @@ const forbidCompletelyNonExistentBuiltIns = {
     'range',
   ] }],
   'es/no-nonstandard-dataview-prototype-properties': [ERROR, { allow: [
-    'getFloat16',
     'getUint8Clamped',
-    'setFloat16',
     'setUint8Clamped',
   ] }],
   'es/no-nonstandard-function-properties': [ERROR, { allow: [
@@ -1182,6 +1247,8 @@ const forbidCompletelyNonExistentBuiltIns = {
   'es/no-nonstandard-iterator-properties': [ERROR, { allow: [
     'concat',
     'range',
+    'zip',
+    'zipKeyed',
   ] }],
   'es/no-nonstandard-iterator-prototype-properties': [ERROR, { allow: [
     'toAsync',
@@ -1221,7 +1288,6 @@ const forbidCompletelyNonExistentBuiltIns = {
     'upsert',
   ] }],
   'es/no-nonstandard-math-properties': [ERROR, { allow: [
-    'f16round',
     'sumPrecise',
     // TODO: drop from `core-js@4`
     'DEG_PER_RAD',
@@ -1243,6 +1309,9 @@ const forbidCompletelyNonExistentBuiltIns = {
     'fromString',
     'range',
   ] }],
+  'es/no-nonstandard-number-prototype-properties': [ERROR, { allow: [
+    'clamp',
+  ] }],
   'es/no-nonstandard-object-properties': [ERROR, { allow: [
     // TODO: drop from `core-js@4`
     'iterateEntries',
@@ -1260,9 +1329,6 @@ const forbidCompletelyNonExistentBuiltIns = {
     'hasMetadata',
     'hasOwnMetadata',
     'metadata',
-  ] }],
-  'es/no-nonstandard-regexp-properties': [ERROR, { allow: [
-    'escape',
   ] }],
   'es/no-nonstandard-set-properties': [ERROR, { allow: [
     'from',
@@ -1451,6 +1517,30 @@ const forbidES2015BuiltIns = {
   'es/no-typed-arrays': ERROR,
   'es/no-weak-map': ERROR,
   'es/no-weak-set': ERROR,
+  // enforce the use of `Math.cbrt()` instead of other cube root calculations
+  'math/prefer-math-cbrt': OFF,
+  // enforce the use of `Math.hypot()` instead of other hypotenuse calculations
+  'math/prefer-math-hypot': OFF,
+  // enforce the use of `Math.log10` instead of other ways
+  'math/prefer-math-log10': OFF,
+  // enforce the use of `Math.log10` instead of other ways
+  'math/prefer-math-log2': OFF,
+  // enforce the use of `Math.trunc()` instead of other truncations
+  'math/prefer-math-trunc': OFF,
+  // enforce the use of `Number.EPSILON` instead of other ways
+  'math/prefer-number-epsilon': OFF,
+  // enforce the use of `Number.isFinite()` instead of other checking ways
+  'math/prefer-number-is-finite': OFF,
+  // enforce the use of `Number.isInteger()` instead of other checking ways
+  'math/prefer-number-is-integer': OFF,
+  // enforce the use of `Number.isNaN()` instead of other checking ways
+  'math/prefer-number-is-nan': OFF,
+  // enforce the use of `Number.isSafeInteger()` instead of other checking ways
+  'math/prefer-number-is-safe-integer': OFF,
+  // enforce the use of `Number.MAX_SAFE_INTEGER` instead of other ways
+  'math/prefer-number-max-safe-integer': OFF,
+  // enforce the use of `Number.MIN_SAFE_INTEGER` instead of other ways
+  'math/prefer-number-min-safe-integer': OFF,
   // prefer modern `Math` APIs over legacy patterns
   'unicorn/prefer-modern-math-apis': OFF,
   // prefer `String#{ startsWith, endsWith }()` over `RegExp#test()`
@@ -1787,17 +1877,17 @@ const tests = {
   // disallow unnecessary calls to `.call()` and `.apply()`
   'no-useless-call': OFF,
   // specify the maximum length of a line in your program
-  '@stylistic/js/max-len': [ERROR, { ...base['@stylistic/js/max-len'][1], code: 180 }],
+  '@stylistic/max-len': [ERROR, { ...base['@stylistic/max-len'][1], code: 180 }],
   // enforces the use of `catch()` on un-returned promises
   'promise/catch-or-return': OFF,
-  // disallow `instanceof` with built-in objects
-  'unicorn/no-instanceof-builtins': OFF,
   // prefer catch to `then(a, b)` / `then(null, b)` for handling errors
   'promise/prefer-catch': OFF,
   // shorthand promises should be used
   'sonarjs/prefer-promise-shorthand': OFF,
   // enforce passing a message value when throwing a built-in error
   'unicorn/error-message': OFF,
+  // disallow `instanceof` with built-in objects
+  'unicorn/no-instanceof-builtins': OFF,
   // prefer `.at()` method for index access and `String#charAt()`
   'unicorn/prefer-at': OFF,
   // prefer `.includes()` over `.indexOf()` and `Array#some()` when checking for existence or non-existence
@@ -1951,7 +2041,7 @@ const json = {
   // disallow invalid number for JSON
   'jsonc/valid-json-number': ERROR,
   // specify the maximum length of a line in your program
-  '@stylistic/js/max-len': OFF,
+  '@stylistic/max-len': OFF,
   // require strict mode directives
   strict: OFF,
 };
@@ -1994,6 +2084,15 @@ const packagesPackageJSON = {
   'package-json/valid-package-def': ERROR,
 };
 
+const nodeDependencies = {
+  // enforce the versions of the engines of the dependencies to be compatible
+  'node-dependencies/compat-engines': ERROR,
+  // disallow having dependencies on deprecate packages
+  'node-dependencies/no-deprecated': ERROR,
+  // enforce versions that is valid as a semantic version
+  'node-dependencies/valid-semver': ERROR,
+};
+
 const markdown = {
   ...disable(forbidModernBuiltIns),
   ...forbidCompletelyNonExistentBuiltIns,
@@ -2026,7 +2125,7 @@ const markdown = {
   // variables should be defined before being used
   'sonarjs/no-reference-error': OFF,
   // specify the maximum length of a line in your program
-  '@stylistic/js/max-len': [ERROR, { ...base['@stylistic/js/max-len'][1], code: 200 }],
+  '@stylistic/max-len': [ERROR, { ...base['@stylistic/max-len'][1], code: 200 }],
 };
 
 const globalsESNext = {
@@ -2091,9 +2190,9 @@ export default [
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      '@stylistic/js': pluginStylisticJS,
-      '@stylistic/plus': pluginStylisticPlus,
+      '@stylistic': pluginStylistic,
       'array-func': pluginArrayFunc,
+      ascii: pluginASCII,
       canonical: pluginCanonical,
       depend: pluginDepend,
       es: pluginESX,
@@ -2101,7 +2200,9 @@ export default [
       import: pluginImport,
       jsonc: pluginJSONC,
       markdown: pluginMarkdown,
+      math: pluginMath,
       node: pluginN,
+      'node-dependencies': pluginNodeDependencies,
       'package-json': pluginPackageJSON,
       promise: pluginPromise,
       qunit: pluginQUnit,
@@ -2141,7 +2242,7 @@ export default [
   {
     files: [
       'packages/core-js?(-pure)/**',
-      'tests/@(unit-pure|worker)/**',
+      'tests/@(helpers|unit-pure|worker)/**',
       'tests/compat/@(browsers|hermes|node|rhino)-runner.js',
     ],
     rules: forbidModernBuiltIns,
@@ -2280,7 +2381,10 @@ export default [
   },
   {
     files: ['**/package.json'],
-    rules: packageJSON,
+    rules: {
+      ...packageJSON,
+      ...nodeDependencies,
+    },
   },
   {
     files: ['packages/*/package.json'],

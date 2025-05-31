@@ -61,6 +61,7 @@ for (PATH of ['core-js-pure', 'core-js']) {
     load(NS, 'function/has-instance');
     load(NS, 'function');
     ok(Array.isArray(load(NS, 'array/from')('qwe')));
+    ok(typeof load(NS, 'array/from-async') == 'function');
     ok(load(NS, 'array/is-array')([]));
     ok(Array.isArray(load(NS, 'array/of')('q', 'w', 'e')));
     ok(load(NS, 'array/at')([1, 2, 3], -2) === 2);
@@ -136,6 +137,7 @@ for (PATH of ['core-js-pure', 'core-js']) {
     ok('from' in load(NS, 'array'));
     ok(load(NS, 'array/splice')([1, 2, 3], 1, 2)[0] === 2);
     ok(new (load(NS, 'error/constructor').Error)(1, { cause: 7 }).cause === 7);
+    ok(load(NS, 'error/is-error')(new Error()));
     ok(typeof load(NS, 'error/to-string') == 'function');
     ok(new (load(NS, 'error').Error)(1, { cause: 7 }).cause === 7);
     ok(load(NS, 'math/acosh')(1) === 0);
@@ -349,6 +351,16 @@ for (PATH of ['core-js-pure', 'core-js']) {
     ok(typeof load(NS, 'iterator/some') == 'function');
     ok(typeof load(NS, 'iterator/take') == 'function');
     ok(typeof load(NS, 'iterator/to-array') == 'function');
+    ok(new (load(NS, 'suppressed-error'))(1, 2).suppressed === 2);
+    ok(typeof load(NS, 'disposable-stack') == 'function');
+    ok(typeof load(NS, 'disposable-stack/constructor') == 'function');
+    load(NS, 'iterator/dispose');
+    ok(load(NS, 'symbol/async-dispose'));
+    ok(load(NS, 'symbol/dispose'));
+    load(NS, 'async-iterator');
+    load(NS, 'async-iterator/async-dispose');
+    ok(typeof load(NS, 'async-disposable-stack') == 'function');
+    ok(typeof load(NS, 'async-disposable-stack/constructor') == 'function');
 
     const instanceAt = load(NS, 'instance/at');
     ok(typeof instanceAt == 'function');
@@ -675,7 +687,6 @@ for (PATH of ['core-js-pure', 'core-js']) {
   }
 
   for (const NS of ['actual', 'full', 'features']) {
-    ok(typeof load(NS, 'array/from-async') == 'function');
     ok(typeof load(NS, 'array/group') == 'function');
     ok(typeof load(NS, 'array/group-to-map') == 'function');
     ok(typeof load(NS, 'array/group-by') == 'function');
@@ -697,23 +708,13 @@ for (PATH of ['core-js-pure', 'core-js']) {
     ok(typeof load(NS, 'async-iterator/some') == 'function');
     ok(typeof load(NS, 'async-iterator/take') == 'function');
     ok(typeof load(NS, 'async-iterator/to-array') == 'function');
-    ok(load(NS, 'error/is-error')(new Error()));
     ok(load(NS, 'function/metadata') === null);
     ok(typeof load(NS, 'iterator/to-async') == 'function');
     ok(load(NS, 'json/is-raw-json')({}) === false);
     ok(load(NS, 'json/parse')('[42]', (key, value, { source }) => typeof value == 'number' ? source + source : value)[0] === '4242');
     ok(typeof load(NS, 'json/raw-json')(42) == 'object');
     ok(load(NS, 'math/sum-precise')([1, 2, 3]) === 6);
-    ok(load(NS, 'symbol/dispose'));
     ok(load(NS, 'symbol/metadata'));
-    ok(new (load(NS, 'suppressed-error'))(1, 2).suppressed === 2);
-    ok(typeof load(NS, 'disposable-stack') == 'function');
-    ok(typeof load(NS, 'disposable-stack/constructor') == 'function');
-    load(NS, 'iterator/dispose');
-    ok(load(NS, 'symbol/async-dispose'));
-    load(NS, 'async-iterator/async-dispose');
-    ok(typeof load(NS, 'async-disposable-stack') == 'function');
-    ok(typeof load(NS, 'async-disposable-stack/constructor') == 'function');
 
     const instanceGroup = load(NS, 'instance/group');
     ok(typeof instanceGroup == 'function');
@@ -772,6 +773,8 @@ for (PATH of ['core-js-pure', 'core-js']) {
     ok(typeof load(NS, 'iterator/indexed') == 'function');
     ok(load(NS, 'iterator/concat')([2]).next().value === 2);
     ok(load(NS, 'iterator/range')(1, 2).next().value === 1);
+    ok(typeof load(NS, 'iterator/zip') == 'function');
+    ok(typeof load(NS, 'iterator/zip-keyed') == 'function');
     ok(load(NS, 'map/delete-all')(new Map(), 1, 2) === false);
     ok(load(NS, 'map/emplace')(new Map([[1, 2]]), 1, { update: it => it ** 2 }) === 4);
     ok(load(NS, 'map/every')(new Map([[1, 2], [2, 3], [3, 4]]), it => it % 2) === false);
@@ -806,6 +809,7 @@ for (PATH of ['core-js-pure', 'core-js']) {
     ok(load(NS, 'map/reduce')(new Map([[1, 2], [2, 3], [3, 4]]), (a, b) => a + b) === 9);
     ok(load(NS, 'map/some')(new Map([[1, 2], [2, 3], [3, 4]]), it => it % 2) === true);
     ok(load(NS, 'map/update')(new Map([[1, 2]]), 1, it => it * 2).get(1) === 4);
+    ok(load(NS, 'number/clamp')(6, 2, 4) === 4);
     ok(load(NS, 'number/from-string')('12', 3) === 5);
     ok(load(NS, 'number/range')(1, 2).next().value === 1);
     ok(typeof load(NS, 'object/iterate-entries')({}).next == 'function');
@@ -940,6 +944,7 @@ for (PATH of ['core-js-pure', 'core-js']) {
   load('proposals/iterator-helpers-stage-3-2');
   load('proposals/iterator-range');
   load('proposals/iterator-sequencing');
+  load('proposals/joint-iteration');
   load('proposals/json-parse-with-source');
   load('proposals/keys-composition');
   load('proposals/map-update-or-insert');
@@ -947,6 +952,7 @@ for (PATH of ['core-js-pure', 'core-js']) {
   load('proposals/map-upsert-stage-2');
   load('proposals/map-upsert-v4');
   load('proposals/math-clamp');
+  load('proposals/math-clamp-v2');
   load('proposals/math-extensions');
   load('proposals/math-signbit');
   load('proposals/math-sum');

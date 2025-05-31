@@ -283,4 +283,18 @@ export default {
     'es.math.f16round',
     'es.regexp.escape',
   ],
+  3.43: [
+    'es.array.from-async',
+    'es.async-disposable-stack.constructor',
+    'es.async-iterator.async-dispose',
+    'es.disposable-stack.constructor',
+    'es.error.is-error',
+    'es.iterator.dispose',
+    'es.suppressed-error.constructor',
+    'es.symbol.async-dispose',
+    'es.symbol.dispose',
+    'esnext.iterator.zip',
+    'esnext.iterator.zip-keyed',
+    'esnext.number.clamp',
+  ],
 };

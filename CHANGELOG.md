@@ -1,11 +1,54 @@
 ## Changelog
 ##### Unreleased
+- [Explicit Resource Management proposals](https://github.com/tc39/proposal-explicit-resource-management):
+  - Built-ins:
+    - `Symbol.dispose`
+    - `Symbol.asyncDispose`
+    - `SuppressedError`
+    - `DisposableStack`
+      - `DisposableStack.prototype.dispose`
+      - `DisposableStack.prototype.use`
+      - `DisposableStack.prototype.adopt`
+      - `DisposableStack.prototype.defer`
+      - `DisposableStack.prototype.move`
+      - `DisposableStack.prototype[@@dispose]`
+    - `AsyncDisposableStack`
+      - `AsyncDisposableStack.prototype.disposeAsync`
+      - `AsyncDisposableStack.prototype.use`
+      - `AsyncDisposableStack.prototype.adopt`
+      - `AsyncDisposableStack.prototype.defer`
+      - `AsyncDisposableStack.prototype.move`
+      - `AsyncDisposableStack.prototype[@@asyncDispose]`
+    - `Iterator.prototype[@@dispose]`
+    - `AsyncIterator.prototype[@@asyncDispose]`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://x.com/robpalmer2/status/1927744934343213085)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- [`Array.fromAsync` proposal](https://github.com/tc39/proposal-array-from-async):
+  - Built-ins:
+    - `Array.fromAsync`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://github.com/tc39/proposal-array-from-async/issues/14#issuecomment-2916645435)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- [`Error.isError` proposal](https://github.com/tc39/proposal-is-error):
+  - Built-ins:
+    - `Error.isError`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://github.com/tc39/proposals/commit/a5d4bb99d79f328533d0c36b0cd20597fa12c7a8)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- Added [Joint iteration stage 2.7 proposal](https://github.com/tc39/proposal-joint-iteration):
+  - Built-ins:
+    - `Iterator.zip`
+    - `Iterator.zipKeyed`
+- [`Number.prototype.clamp` proposal](https://github.com/tc39/proposal-math-clamp):
+  - Built-ins:
+    - `Number.prototype.clamp`
+  - Moved to stage 2, [May 2025 TC39 meeting](https://github.com/tc39/proposal-math-clamp/commit/a005f28a6a03e175b9671de1c8c70dd5b7b08c2d)
+  - `Math.clamp` was replaced with `Number.prototype.clamp`
+  - Removed a `RangeError` if `min <= max` or `+0` min and `-0` max, [tc39/proposal-math-clamp/#22](https://github.com/tc39/proposal-math-clamp/issues/22)
 - Always check regular expression flags by `flags` getter [PR](https://github.com/tc39/ecma262/pull/2791). Native methods are not fixed, only own implementation updated for:
   - `RegExp.prototype[@@match]`
   - `RegExp.prototype[@@replace]`
 - Improved handling of `RegExp` flags in polyfills of some methods in engines without proper support of `RegExp.prototype.flags` and without polyfill of this getter
-- Added feature detection for [a bug](https://bugs.webkit.org/show_bug.cgi?id=288595) that occurs when `this` is updated while `Set.prototype.difference` is being executed
-- Added feature detection for [a bug](https://bugs.webkit.org/show_bug.cgi?id=289430) that occurs when iterator record of a set-like object isn't called before cloning `this` in the following methods:
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=288595) that occurs when `this` is updated while `Set.prototype.difference` is being executed
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=289430) that occurs when iterator record of a set-like object isn't called before cloning `this` in the following methods:
   - `Set.prototype.symmetricDifference`
   - `Set.prototype.union`
 - Added feature detection for [a bug](https://issues.chromium.org/issues/336839115) in V8 ~ Chromium < 126. Following methods should throw an error on invalid iterator:
@@ -13,14 +56,24 @@
   - `Iterator.prototype.filter`
   - `Iterator.prototype.flatMap`
   - `Iterator.prototype.map`
-- Added feature detection for Firefox bug: incorrect exception thrown by `Array.prototype.with` when index coercion fails
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=288714): incorrect exception thrown by `Iterator.from` when underlying iterator's `return` method is `null`
+- Added feature detection for a FF bug: incorrect exception thrown by `Array.prototype.with` when index coercion fails
+- Added feature detection for a WebKit bug: `TypedArray.prototype.with` should truncate negative fractional index to zero, but instead throws an error
+- Worked around a bug of many different tools ([example](https://github.com/zloirock/core-js/pull/1368#issuecomment-2908034690)) with incorrect transforming and breaking JS syntax on getting a method from a number literal
+- Fixed deoptimization of the `Promise` polyfill in the pure version
+- Added some missed dependencies to `/iterator/flat-map` entries
 - Compat data improvements:
   - [`Error.isError`](https://github.com/tc39/proposal-is-error) marked not supported in Node because of [a bug](https://github.com/nodejs/node/issues/56497)
-  - Added [Deno 2.3](https://github.com/denoland/deno/releases/tag/v2.3.0) compat data mapping
+  - Added [Deno 2.3](https://github.com/denoland/deno/releases/tag/v2.3.0) and [Deno 2.3.2](https://github.com/denoland/deno/releases/tag/v2.3.2) compat data mapping
   - Updated Electron 37 compat data mapping
   - `Set.prototype.difference` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=288595)
   - `Set.prototype.{ symmetricDifference, union }` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=289430)
-  - `Array.prototype.with` marked as unsupported in Firefox because it throws an incorrect exception when index coercion fails
+  - `Iterator.from` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=288714)
+  - Iterators closing on early errors in `Iterator` helpers marked as implemented from FF141
+  - `Array.prototype.with` marked as supported only from FF140 because it throws an incorrect exception when index coercion fails
+  - `TypedArray.prototype.with` marked as unsupported in Bun and Safari because it should truncate negative fractional index to zero, but instead throws an error
+  - `AsyncDisposableStack` bugs marked as fixed in Deno 2.3.2
+  - `SuppressedError` bugs ([extra arguments support](https://github.com/oven-sh/bun/issues/9283) and [arity](https://github.com/oven-sh/bun/issues/9282)) marked as fixed in Bun 1.2.15
 
 ##### [3.42.0 - 2025.04.30](https://github.com/zloirock/core-js/releases/tag/v3.42.0)
 - Changes [v3.41.0...v3.42.0](https://github.com/zloirock/core-js/compare/v3.41.0...v3.42.0) (142 commits)
